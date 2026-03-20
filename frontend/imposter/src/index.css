@@ -1,0 +1,11 @@
+/* Reset margins and set the background for the entire browser window */
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #0b0d17; /* Matches your space-bg color */
+  overflow-x: hidden; /* Prevents horizontal scrolling */
+}
+
+/* Ensure the game container takes up the full width */

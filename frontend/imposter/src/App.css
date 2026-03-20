@@ -1,0 +1,181 @@
+:root {
+  --among-bg: #0B0B0C;
+  --neon-blue: #00f2fe;
+  --imposter-red: #ff3c3c;
+  --card-bg: rgba(26, 26, 26, 0.9);
+  --text-yellow: #f5f557;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--among-bg);
+  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  overflow-x: hidden;
+}
+
+#page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background: radial-gradient(circle at center, #1a1a2e 0%, #0b0b0c 100%);
+}
+
+/* --- STARFIELD ANIMATION --- */
+#page::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: starsMove 100s linear infinite;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+@keyframes starsMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+
+/* --- TITLE & HEADINGS --- */
+.hh {
+  font-size: 2rem;
+  margin-top: 50px;
+  color: white;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(255, 60, 60, 0.5);
+  z-index: 1;
+  letter-spacing: 5px;
+  animation: titlePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+  from { transform: scale(1); filter: brightness(1); }
+  to { transform: scale(1.05); filter: brightness(1.2); }
+}
+
+/* --- CARDS & FORMS --- */
+.container {
+  display: flex;
+  gap: 40px;
+  margin-top: 30px;
+  z-index: 1;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 3px solid #444;
+  padding: 30px;
+  border-radius: 15px;
+  width: 320px;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.card:hover {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 20px var(--neon-blue);
+  transform: translateY(-10px);
+}
+
+.card h1 {
+  font-size: 1.5rem;
+  margin-bottom: 25px;
+  color: var(--neon-blue);
+  text-align: center;
+}
+
+.form-row {
+  margin-bottom: 15px;
+}
+
+.form-row h5 {
+  margin: 0 0 8px 0;
+  color: #888;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.form-row input {
+  width: 100%;
+  background: #000;
+  border: 1px solid #444;
+  padding: 12px;
+  color: white;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.form-row input:focus {
+  border-color: var(--neon-blue);
+  outline: none;
+}
+
+/* --- BUTTONS --- */
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-radius: 5px;
+  border: none;
+  transition: 0.2s;
+}
+
+.card button {
+  background:greenyellow;
+  color: #000;
+}
+
+.card button:hover {
+  background: #fff;
+  transform: scale(1.02);
+}
+
+/* --- FLOATING CREWMATE DECORATION --- */
+.floating-crew {
+  position: absolute;
+  width: 60px;
+  height: 80px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- RULES OVERLAY --- */
+.rulesOverlay {
+  position: fixed;
+  top:0; left:0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 1000;
+}
+
+.rulesBox {
+  background: #111;
+  border: 2px solid var(--text-yellow);
+  padding: 40px;
+  border-radius: 10px;
+  max-width: 500px;
+}
+
+#ak {
+  width: 100%;
+  text-align: center;
+  color: #555;
+  margin-top: 50px;
+  font-size: 0.9rem;
+}
