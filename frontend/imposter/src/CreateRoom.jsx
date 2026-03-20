@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import './App.css';
 
-const socket = io("http://localhost:3000");
+const socket = io("https://imposter-arena.onrender.com", {
+  transports: ["websocket"]
+});
 
 function CreateRoom() {
   const [showRules, setShowRules] = useState(false);
