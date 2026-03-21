@@ -67,6 +67,7 @@ rooms.push(newRoom);
 socket.join(newRoom.room);
 socket.emit('code',(newRoom))
 io.to(data.room).emit("players_list",newRoom.players);
+console.log(rooms)
 
 // 🔥 AUTO DELETE AFTER 1 HOUR
 setTimeout(()=>{
