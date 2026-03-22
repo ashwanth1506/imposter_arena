@@ -7,10 +7,8 @@ import "./room.css";
 import StarsBackground from "./components/StarsBackground";
 
 
-const socket = io("https://imposter-arena.onrender.com", {
-  transports: ["websocket"],
-  withCredentials: false
-});
+
+const socket = io("http://localhost:3000");
 
 function Room() {
   const sendSound = new Audio(sendMp3);
@@ -39,6 +37,7 @@ function Room() {
   const [imposter, setImposter] = useState("");
   const [movie, setMovie] = useState("");
   const [result, setResult] = useState(null);
+  const [currentVoteRoundId, setCurrentVoteRoundId] = useState(null);
   const [leaderboard, setLeaderboard] = useState({});
   const [gameEnded, setGameEnded] = useState(false);
   const [winner, setWinner] = useState(null);
@@ -81,10 +80,12 @@ navigate("/");
         setImposter(data.imposter);
         if (data.cturn !== undefined) setTurn(data.cturn);
       }
-      // Always reset voting state when game state is received
-      setVoting(false);
-      setVote("");
-      setVoteSubmitted(false);
+      // Only reset voting if voting is NOT currently in progress on server
+      if (!data.votingStarted) {
+        setVoting(false);
+        setVote("");
+        setVoteSubmitted(false);
+      }
       setLeaderboard(data.leaderboard || {});
     });
 
@@ -108,8 +109,21 @@ navigate("/");
 
     socket.on("receive_message", (msg) => setMessages((prev) => [...prev, msg]));
 
-    socket.on("voting_started", () => {
-      setVoting(true); setVoteTime(20); setVote(""); setVoteSubmitted(false);
+    socket.on("voting_started", (data) => {
+      const remaining = typeof data === "object" ? data.remaining : 20;
+      const roundId = typeof data === "object" ? data.voteRoundId : null;
+      
+      // Only start voting if it's a new round (prevent restart on reconnect)
+      if (roundId && currentVoteRoundId === roundId) {
+        console.log("Already voting in this round");
+        return;
+      }
+      
+      setCurrentVoteRoundId(roundId);
+      setVoting(true); 
+      setVoteTime(remaining); 
+      setVote(""); 
+      setVoteSubmitted(false);
       tickAudio.current.loop = true;
       tickAudio.current.play().catch(() => {});
       votingTimerRef.current = setInterval(() => {
@@ -126,7 +140,10 @@ navigate("/");
     });
 
     socket.on("vote_result", (data) => {
-      setResult(data); setVoting(false); setLeaderboard(data.leaderboard || {});
+      setResult(data); 
+      setVoting(false); 
+      setCurrentVoteRoundId(null);
+      setLeaderboard(data.leaderboard || {});
       clearInterval(votingTimerRef.current);
       tickAudio.current.pause();
       tickAudio.current.currentTime = 0;
@@ -140,6 +157,7 @@ navigate("/");
 
     socket.on("disconnect", () => {
       setVoting(false);
+      setCurrentVoteRoundId(null);
       setVote("");
       setVoteSubmitted(false);
     });
@@ -152,17 +170,19 @@ navigate("/");
   }, [roomName, name, navigate]);
 
   useEffect(() => {
-    if (click === 1 && turn >= 2 * asize && !result) {
+    if (click === 1 && turn >= 2 * asize && !result && !voting) {
       socket.emit("start_voting", roomName);
     }
-  }, [turn, asize, click, result, roomName]);
+  }, [turn, asize, click, result, roomName, voting]);
 
  if(size !== asize){
   return (
+    
     <div id="loadingScreen">
 
       <h1 className="loadingTitle">🎮 Waiting for Players...</h1>
       <h1 className="loadingTitl">Room Code:{roomName}</h1>
+      
       <div className="playerSlots">
   {Array.from({length: asize}).map((_,i)=>(
     <div key={i} className={`slot ${players[i] ? "filled":""}`}>
@@ -353,6 +373,9 @@ if(loadingGame){
     </div>
     </>
   );
+}
+
+export default Room;
 }
 
 export default Room;
