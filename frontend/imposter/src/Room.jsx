@@ -376,6 +376,4 @@ if(loadingGame){
 }
 
 export default Room;
-}
 
-export default Room;
