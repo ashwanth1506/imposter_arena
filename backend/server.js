@@ -63,6 +63,7 @@ console.log(newRoom.room);
 newRoom.leaderboard[data.username]=0;
 
 rooms.push(newRoom);
+console.log(rooms);
 
 socket.join(newRoom.room);
 socket.emit('code',(newRoom))
