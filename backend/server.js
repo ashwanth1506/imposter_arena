@@ -67,7 +67,6 @@ rooms.push(newRoom);
 socket.join(newRoom.room);
 socket.emit('code',(newRoom))
 io.to(data.room).emit("players_list",newRoom.players);
-console.log(rooms)
 
 // 🔥 AUTO DELETE AFTER 1 HOUR
 setTimeout(()=>{
@@ -159,7 +158,8 @@ socket.emit("game_state",{
 started:r.started,
 movie:r.movie,
 imposter:r.imposter,
-leaderboard:r.leaderboard
+leaderboard:r.leaderboard,
+votingStarted:r.votingStarted
 });
 
 if(r.voteResult){
@@ -175,7 +175,7 @@ if(r.votingStarted){
       Math.ceil((r.voteDuration-(Date.now()-r.voteStartTime))/1000)
     );
     console.log(`[REJOIN] ${user} joining voting room - sending voting_started (${remaining}s remaining)`);
-    socket.emit("voting_started",remaining);
+    socket.emit("voting_started", { remaining, voteRoundId: r.voteRoundId });
   } else {
     console.log(`[REJOIN] ${user} already voted in this round, not showing vote UI`);
   }
@@ -272,7 +272,8 @@ r.voteRoundId++; // Increment to invalidate any pending timeouts from previous r
 
 const currentRoundId = r.voteRoundId;
 
-io.to(roomName).emit("voting_started");
+r.voteStartTime = Date.now();
+io.to(roomName).emit("voting_started", { remaining: 20, voteRoundId: r.voteRoundId });
 
 const timeoutId = setTimeout(()=>{
 if(r.voteRoundId !== currentRoundId) return;
