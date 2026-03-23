@@ -260,7 +260,7 @@ if(loadingGame){
       <div className="game-container space-bg">
 
         {/* VOTING MODULE (TOP LEFT) */}
-      {voting && !voteSubmitted && (
+      {voting && !voteSubmitted && turn==2*size && (
         <div className="vote-module top-left">
           <div className="lb-header">EJECT CREWMATE?</div>
           <div className="vote-grid">
