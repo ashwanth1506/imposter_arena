@@ -8,7 +8,7 @@ import StarsBackground from "./components/StarsBackground";
 
 
 
-const socket = io("https://imposter-arena.onrender.com/");
+const socket = io("https://imposter-arena.onrender.com");
 
 function Room() {
   const sendSound = new Audio(sendMp3);
