@@ -263,6 +263,7 @@ socket.on("start_voting",(roomName)=>{
 
 const r=rooms.find(r=>r.room===roomName);
 if(!r) return;
+if(r.cturn!=2*r.size) return;
 
 if(r.votingStarted) return;
 
