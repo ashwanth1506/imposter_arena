@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500&display=swap');
 :root {
   --neon-blue: #00f2fe;
   --imposter-red: #ff3c3c;
@@ -15,6 +16,11 @@
   align-items: center;
   overflow: hidden;
   z-index: 1;
+}
+.loadingTitle{
+ font-family:monospace;
+  margin-bottom:20px;
+  color:#0A84FF;
 }
 
 /* Ensure the HTML/Body doesn't have a competing background color */
@@ -260,7 +266,7 @@ html, body {
 }
 .start-btn { background: #0A84FF;; color: rgb(0, 0, 0); }
 .next-btn { background:#0A84FF;; color: #000; }
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500&display=swap');
+
 
 /* UI text */
 body{
@@ -344,11 +350,7 @@ h1{
 }
 
 /* TITLE */
-.loadingTitle{
-  font-size:32px;
-  margin-bottom:20px;
-  color:#0A84FF;
-}
+
 
 /* PLAYER SLOTS */
 .playerSlots{
@@ -831,3 +833,4 @@ h1{
 }
 
 /* Add a subtle pulse to the name tag of the speaker */
+
