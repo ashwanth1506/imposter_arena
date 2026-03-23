@@ -8,7 +8,7 @@ import StarsBackground from "./components/StarsBackground";
 
 
 
-const socket = io("https://imposter-arena.onrender.com");
+const socket = io("https://imposter-arena.onrender.com/");
 
 function Room() {
   const sendSound = new Audio(sendMp3);
@@ -343,9 +343,19 @@ if(loadingGame){
           </div>
         )}
       </div>
+      
 
       {/* BOTTOM RIGHT: ADMIN ACTIONS */}
       <div className="bottom-right-actions">
+        {result && !gameEnded && (
+          <>
+          <h3 className="loadingTitle">Imposter:{imposter}</h3>
+          <h3 className="loadingTitle">Movie:{movie}</h3>
+          </>
+          
+      
+              
+            )}
         {name === admin && (
           <>
             {click === 0 ? (
@@ -376,4 +386,3 @@ if(loadingGame){
 }
 
 export default Room;
-
