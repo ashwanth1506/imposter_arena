@@ -11,6 +11,7 @@ import StarsBackground from "./components/StarsBackground";
 const socket = io("https://imposter-arena.onrender.com", {
   transports: ["websocket"]
 });
+
 function Room() {
   const sendSound = new Audio(sendMp3);
   const tickAudio = useRef(new Audio(tickMp3));
@@ -21,6 +22,7 @@ function Room() {
 
   // State
   const [players, setPlayers] = useState([]);
+  const [hide, sethide] = useState(false);
   const [showFinal, setShowFinal] = useState(false);
   const [vote, setVote] = useState("");
   const [voteSubmitted, setVoteSubmitted] = useState(false);
@@ -53,6 +55,16 @@ function Room() {
     socket.emit("send_message", { room: roomName, user: name, message });
     setMessage("");
   };
+  const role=()=>{
+    if(hide==true){
+      sethide(false)
+    }
+    else{
+      sethide(true)
+
+    }
+    console.log(hide)
+  }
   const endGame=()=>{
 
 socket.emit("end_game",roomName);
@@ -260,7 +272,7 @@ if(loadingGame){
       <div className="game-container space-bg">
 
         {/* VOTING MODULE (TOP LEFT) */}
-      {voting && !voteSubmitted && turn==2*size && (
+      {voting && !voteSubmitted && turn==2*size &&(
         <div className="vote-module top-left">
           <div className="lb-header">EJECT CREWMATE?</div>
           <div className="vote-grid">
@@ -268,6 +280,7 @@ if(loadingGame){
               <button key={p} className={`vote-btn ${vote === p ? "selected-radio" : ""}`} onClick={() => setVote(p)}>
                 <span className="radio-circle"></span> {p}
               </button>
+              
             ))}
           </div>
           <button className="submit-vote" disabled={!vote} onClick={() => { setVoteSubmitted(true); socket.emit("vote_imposter", { room: roomName, voter: name, voted: vote }); }}>
@@ -298,8 +311,14 @@ if(loadingGame){
                </div>
              ) : click === 1 && (
                <div className={`center-info ${name === imposter ? "is-imposter" : ""}`}>
-                  <p className="role-label">{name === imposter ? "IMPOSTER" : "MOVIE"}</p>
-                  <h2 className="role-value">{name === imposter ? "???" : movie}</h2>
+                {!hide && (
+                  <>
+                    <p className="role-label">{name === imposter ? "IMPOSTER" : "MOVIE"}</p>
+                    <h2 className="role-value">{name === imposter ? "???" : movie}</h2>
+                  </>
+                )}
+                <button className="action-btn end-btn" onClick={role}>hide role</button>
+                  
                   {voting && <div className="voting-timer-inner">{voteTime}s</div>}
                </div>
              )}
@@ -332,6 +351,7 @@ if(loadingGame){
 
       {/* BOTTOM LEFT: ALIGNED INPUT & TRANSMIT */}
       <div className="bottom-controls">
+      
         {click === 1 && turn < 2 * asize && !result && (
           <div className="input-row">
             <input
