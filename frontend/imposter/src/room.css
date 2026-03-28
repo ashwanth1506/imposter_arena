@@ -4,6 +4,16 @@
   --imposter-red: #ff3c3c;
   --visor-color: #80ced6;
   --among-bg: #0B0B0C;
+  --crew-red: #e63946;
+  --crew-blue: #457b9d;
+  --crew-green: #2a9d8f;
+  --crew-pink: #f4a6c1;
+  --crew-orange: #f77f00;
+  --crew-yellow: #fcbf49;
+  --crew-black: #1a1a1a;
+  --crew-white: #f1faee;
+  --crew-purple: #9d4edd;
+  --crew-brown: #8b4513;
 }
 /* Update this class to be transparent */
 .game-container.space-bg {
@@ -170,6 +180,18 @@ html, body {
 .yellow { --crew-glow: #f5f557; }
 .yellow .body, .yellow .backpack { background: #f5f557; }
 
+.black { --crew-glow: #1a1a1a; }
+.black .body, .black .backpack { background: #1a1a1a; }
+
+.white { --crew-glow: #f1faee; }
+.white .body, .white .backpack { background: #f1faee; }
+
+.purple { --crew-glow: #9d4edd; }
+.purple .body, .purple .backpack { background: #9d4edd; }
+
+.brown { --crew-glow: #8b4513; }
+.brown .body, .brown .backpack { background: #8b4513; }
+
 /* DYNAMIC SPEAKING GLOW FIX */
 .crew-wrapper.speaking .crewmate {
   /* Using the specific crew color for the glow */
@@ -212,14 +234,14 @@ html, body {
 .speech-bubble {
   position: absolute;
   bottom: 140%;
-  left: 150%;
+  left: 170%;
   transform: translateX(-50%);
-  height: 30px;
+  height: 40px;
   background: white;
   color: black;
   padding: 15px 15px ;
   border-radius: 10px;
-  width: 100px;
+  width: 120px;
   border-bottom-left-radius: 0px;
   z-index: 100;
   font-weight: bold;
@@ -837,4 +859,5 @@ h1{
 }
 
 /* Add a subtle pulse to the name tag of the speaker */
+
 
