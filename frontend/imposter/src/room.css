@@ -943,6 +943,16 @@ h1{
     white-space: nowrap;
   }
 
+  .speech-bubble {
+    left: 50%;
+    bottom: 125%;
+    width: min(160px, calc(100vw - 32px));
+    max-width: calc(100vw - 32px);
+    padding: 8px;
+    font-size: 12px;
+    text-align: center;
+  }
+
   .bottom-controls {
     right: 12px;
     bottom: 12px;
