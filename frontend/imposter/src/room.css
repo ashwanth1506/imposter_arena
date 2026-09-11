@@ -236,15 +236,24 @@ html, body {
   bottom: 140%;
   left: 170%;
   transform: translateX(-50%);
-  height: 40px;
+  box-sizing: border-box;
+  min-height: 40px;
   background: white;
   color: black;
-  padding: 15px 15px ;
+  padding: 10px;
   border-radius: 10px;
-  width: 120px;
+  width: 180px;
+  max-width:  min(180px, calc(100vw - 32px));
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
   border-bottom-left-radius: 0px;
   z-index: 100;
   font-weight: bold;
+}
+
+.speech-bubble p {
+  margin: 0;
 }
 
 

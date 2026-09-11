@@ -21,6 +21,7 @@ function Room() {
   const navigate = useNavigate();
 
   // State
+  const inputRef = useRef(null);
   const [players, setPlayers] = useState([]);
   const [hide, sethide] = useState(false);
   const [showFinal, setShowFinal] = useState(false);
@@ -40,6 +41,7 @@ function Room() {
   const [imposter, setImposter] = useState("");
   const [movie, setMovie] = useState("");
   const [result, setResult] = useState(null);
+  const [resultShown, setResultShown] = useState(false);
   const [currentVoteRoundId, setCurrentVoteRoundId] = useState(null);
   const [leaderboard, setLeaderboard] = useState({});
   const [gameEnded, setGameEnded] = useState(false);
@@ -93,6 +95,7 @@ navigate("/");
         setImposter(data.imposter);
         if (data.cturn !== undefined) setTurn(data.cturn);
       }
+      setResultShown(Boolean(data.resultshown));
       // Only reset voting if voting is NOT currently in progress on server
       if (!data.votingStarted) {
         setVoting(false);
@@ -111,9 +114,15 @@ navigate("/");
         setIsShuffling(false); // End animation after 5s
         setClick(1); setMovie(data.movie); setImposter(data.imposter); setMessages([]);
         setTurn(0); setResult(null); setVoting(false); setVote(""); setVoteSubmitted(false);
+        setResultShown(false);
         setLeaderboard(data.leaderboard || {});
         setLoadingGame(false);
+        setPlayers(data.player_list);
+        setTurn(data.cctu);
+        setValid(data.ttu);
+        console.log(players);
       }, 5000);
+      console.log(players);
     });
 
     socket.on("sendMessagevalid", (data) => {
@@ -154,6 +163,7 @@ navigate("/");
 
     socket.on("vote_result", (data) => {
       setResult(data); 
+      setResultShown(true);
       setVoting(false); 
       setCurrentVoteRoundId(null);
       setLeaderboard(data.leaderboard || {});
@@ -183,10 +193,16 @@ navigate("/");
   }, [roomName, name, navigate]);
 
   useEffect(() => {
-    if (click === 1 && turn >= 2 * asize && !result && !voting) {
+    if (click === 1 && turn >= 2 * asize && !result && !resultShown && !voting) {
       socket.emit("start_voting", roomName);
     }
-  }, [turn, asize, click, result, roomName, voting]);
+  }, [turn, asize, click, result, resultShown, roomName, voting]);
+
+  useEffect(() => {
+    if (click === 1 && turn < 2 * asize && valid === name && !result && !gameEnded) {
+      inputRef.current?.focus();
+    }
+  }, [click, turn, asize, valid, name, result, gameEnded]);
 
  if(size !== asize){
   return (
@@ -272,7 +288,7 @@ if(loadingGame){
       <div className="game-container space-bg">
 
         {/* VOTING MODULE (TOP LEFT) */}
-      {voting && !voteSubmitted && turn==2*size &&(
+      {voting && !voteSubmitted && turn==2*size && !result && !gameEnded &&(
         <div className="vote-module top-left">
           <div className="lb-header">EJECT CREWMATE?</div>
           <div className="vote-grid">
@@ -355,6 +371,12 @@ if(loadingGame){
         {click === 1 && turn < 2 * asize && !result && (
           <div className="input-row">
             <input
+            ref={inputRef}
+            onKeyDown={(e) => {
+            if (e.key === "Enter" && valid === name) {
+            send();
+            }
+            }}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               disabled={valid !== name}

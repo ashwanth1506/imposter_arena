@@ -56,7 +56,8 @@ const newRoom = {
   leaderboard: {},
   votingStarted: false,
   voteResult: null,
-  voteRoundId: 0
+  voteRoundId: 0,
+  resultshown: false,
 };
 console.log(newRoom.room);
 
@@ -160,7 +161,9 @@ started:r.started,
 movie:r.movie,
 imposter:r.imposter,
 leaderboard:r.leaderboard,
-votingStarted:r.votingStarted
+votingStarted:r.votingStarted,
+resultshown:r.resultshown
+
 });
 
 if(r.voteResult){
@@ -240,6 +243,7 @@ r.voteRoundId++; // Increment round ID to invalidate old voting
 
 r.movie=movies[Math.floor(Math.random()*movies.length)];
 r.imposter=r.players[Math.floor(Math.random()*r.players.length)];
+r.players=r.players.sort(() => Math.random() - 0.5);
 r.messages.length=0;
 
 r.turn=0;
@@ -249,12 +253,19 @@ r.voteResult=null;
 r.votingStarted=false;
 r.voteStartTime=null; // Reset timing
 r.voteDuration=null;
+r.resultshown=false;
 
 io.to(roomName).emit("game_started",{
 movie:r.movie,
 imposter:r.imposter,
-leaderboard:r.leaderboard
+leaderboard:r.leaderboard,
+player_list:r.players,
+ttu:r.players[r.turn],
+cctu:r.cturn,
+result:r.resultshown,
 });
+console.log(r)
+io.to(roomName).emit("players_list",r.players);
 
 });
 
@@ -265,7 +276,8 @@ const r=rooms.find(r=>r.room===roomName);
 if(!r) return;
 if(r.cturn!=2*r.size) return;
 
-if(r.votingStarted) return;
+// Do not restart a round after its result has already been calculated.
+if(r.votingStarted || r.resultshown || r.voteResult) return;
 
 r.votingStarted=true;
 r.voteStartTime=Date.now(); // Record when voting started
@@ -334,6 +346,7 @@ leaderboard:r.leaderboard
 r.votingStarted=false;
 r.voteStartTime=null; // Clear vote start time
 r.voteDuration=null;
+r.resultshown=true;
 
 io.to(roomName).emit("vote_result",r.voteResult);
 
