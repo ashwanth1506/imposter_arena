@@ -869,4 +869,182 @@ h1{
 
 /* Add a subtle pulse to the name tag of the speaker */
 
+/* MOBILE LAYOUT */
+@media (max-width: 600px) {
+  .game-container.space-bg {
+    min-height: 100dvh;
+    height: 100dvh;
+    align-items: flex-start;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .stage {
+    flex: 0 0 800px;
+    transform: scale(0.62);
+    transform-origin: center top;
+    margin-top: 150px;
+    margin-bottom: -290px;
+  }
+
+  .leaderboard-panel {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    min-width: 0;
+    max-height: 118px;
+    overflow-y: auto;
+  }
+
+  .lb-header {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .lb-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    padding: 6px 10px;
+  }
+
+  .rank-item {
+    min-width: 0;
+    padding: 4px 0;
+  }
+
+  .player-name,
+  .player-score {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .vote-module.top-left {
+    top: 140px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 42vh;
+    overflow-y: auto;
+  }
+
+  .vote-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .vote-btn {
+    min-width: 0;
+    padding: 9px 7px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bottom-controls {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .input-row {
+    width: 100%;
+  }
+
+  .input-row input {
+    min-width: 0;
+    width: auto;
+    flex: 1;
+    padding: 12px 10px;
+  }
+
+  .input-row button {
+    position: static;
+    flex: 0 0 68px;
+    width: auto;
+    padding: 12px 8px;
+    
+  }
+
+  .bottom-right-actions {
+    right: 12px;
+    bottom: 78px;
+    left: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .bottom-right-actions .loadingTitle {
+    position: static;
+    flex: 1 0 100%;
+    width: auto;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.2;
+    text-align: right;
+  }
+
+  .bottom-right-actions .action-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+  }
+
+  .action-btn {
+    padding: 11px 16px;
+    font-size: 13px;
+  }
+
+  #loadingScreen,
+  #gameLoading,
+  #finalScreen {
+    min-height: 100dvh;
+    height: auto;
+    box-sizing: border-box;
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .loadingTitle,
+  .glitch {
+    max-width: 100%;
+    font-size: clamp(22px, 8vw, 36px);
+  }
+
+  .loadingTitl {
+    font-size: 16px;
+    overflow-wrap: anywhere;
+  }
+
+  .slot {
+    box-sizing: border-box;
+    width: min(200px, calc(100vw - 32px));
+  }
+
+  .winnerTitle {
+    font-size: clamp(32px, 11vw, 50px);
+  }
+
+  .winnerBox {
+    box-sizing: border-box;
+    width: min(100%, 320px);
+    padding: 16px 24px;
+  }
+
+  .winnerBox h2 {
+    margin: 8px 0;
+    font-size: 28px;
+    overflow-wrap: anywhere;
+  }
+
+  .finalList {
+    width: min(100%, 350px);
+    margin-top: 24px;
+  }
+}
+
 
