@@ -8,7 +8,7 @@ import StarsBackground from "./components/StarsBackground";
 
 
 
-const socket = io("https://imposter-arena.onrender.com", {
+const socket = io("http://localhost:3000/", {
   transports: ["websocket"]
 });
 
@@ -73,7 +73,8 @@ socket.emit("end_game",roomName);
 };
 
   useEffect(() => {
-    socket.emit("join_chat_room", { room: roomName, user: name });
+    const password = sessionStorage.getItem(`imposter-password:${roomName}:${name}`);
+    socket.emit("join_chat_room", { room: roomName, user: name, password });
     socket.on("room_error",(msg)=>{
 alert(msg);
 navigate("/");

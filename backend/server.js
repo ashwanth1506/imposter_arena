@@ -22,6 +22,11 @@ const VOTE_DURATION = 20000; // 20 seconds
 
 const movies = require("./movie");   // ✅ correct for Node.js
 
+const hasValidCredentials = (room, username, password) =>
+  typeof username === "string" &&
+  Object.prototype.hasOwnProperty.call(room.userPasswords, username) &&
+  room.userPasswords[username] === password;
+
 io.on("connection",(socket)=>{
 
 console.log("User connected:",socket.id);
@@ -42,6 +47,9 @@ const newRoom = {
   name:room,
   password: data.password,
   admin: data.username,
+  userPasswords: {
+    [data.username]: data.ipassword
+  },
   size: Number(data.size),
   players: [data.username],
   messages: [],
@@ -67,7 +75,7 @@ rooms.push(newRoom);
 console.log(rooms);
 
 socket.join(newRoom.room);
-socket.emit('code',(newRoom))
+socket.emit('code', { room: newRoom.room, username: data.username });
 io.to(data.room).emit("players_list",newRoom.players);
 
 // 🔥 AUTO DELETE AFTER 1 HOUR
@@ -92,6 +100,16 @@ if(!r){
   socket.emit("join_error","Room not found");
   return;
 }
+const hasRegisteredUsername = Object.prototype.hasOwnProperty.call(
+  r.userPasswords,
+  data.username
+);
+
+
+if(hasRegisteredUsername && !hasValidCredentials(r, data.username, data.ipassword)){
+  socket.emit("join_error","Invalid username or password");
+  return;
+}
 
 // 🔥 CHECK IF PLAYER ALREADY EXISTS
 const isExistingPlayer = r.players.includes(data.username);
@@ -114,6 +132,7 @@ if(!isExistingPlayer && r.players.length >= r.size){
 if(!isExistingPlayer){
   r.players.push(data.username);
   r.leaderboard[data.username]=0;
+  r.userPasswords[data.username]=data.ipassword;
 }
 
 // ✅ ALWAYS JOIN SOCKET
@@ -130,7 +149,7 @@ io.to(data.room).emit("players_list",r.players);
 /* JOIN CHAT ROOM */
 socket.on("join_chat_room",(data)=>{
 
-const {room:roomName,user}=data;
+const {room:roomName,user,password}=data;
 
 const r=rooms.find(r=>r.room===roomName);
 
@@ -139,7 +158,7 @@ socket.emit("room_error","Room not found");
 return;
 }
 
-if(!r.players.includes(user)){
+if(!hasValidCredentials(r, user, password)){
 socket.emit("room_error","Unauthorized user");
 return;
 }

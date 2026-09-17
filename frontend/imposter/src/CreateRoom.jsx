@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import './App.css';
 
-const socket = io("https://imposter-arena.onrender.com", {
+const socket = io("http://localhost:3000/", {
   transports: ["websocket"]
 });
 
@@ -12,6 +12,8 @@ function CreateRoom() {
   const navigate = useNavigate();
   
   // Create Room State
+  const [AindiPassword,setAindiPassword]=useState("");
+  const [PindiPassword,setPindiPassword]=useState("");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -22,7 +24,7 @@ function CreateRoom() {
   const [pusername, psetUsername] = useState("");
 
   const createRoom = () => {
-    if(!name || !password || !username || !noperson ){
+    if(!name || !password || !username || !noperson || !AindiPassword){
       alert("⚠️ Please fill all fields");
       return;
     }
@@ -34,6 +36,7 @@ function CreateRoom() {
     const roomData = {
       room: name,
       password: password,
+      ipassword: AindiPassword,
       username: username,
       size: noperson,
       isadmin: true
@@ -42,13 +45,14 @@ function CreateRoom() {
   };
 
   const joinRoom = () => {
-    if(!pname || !pusername){
+    if(!pname || !pusername || !PindiPassword){
       alert("⚠️ Please fill all fields");
       return;
     }
     const joinData = {
       room: pname,
       username: pusername,
+      ipassword: PindiPassword,
       isadmin: false
     };
     socket.emit("join_room", joinData);
@@ -56,10 +60,12 @@ function CreateRoom() {
 
   useEffect(() => {
     socket.on('code',(data)=>{
+      sessionStorage.setItem(`imposter-password:${data.room}:${data.username}`, AindiPassword);
       navigate(`/chat/${data.room}/${username}`);
     });
 
     socket.on("join_success",(data)=>{
+      sessionStorage.setItem(`imposter-password:${data.room}:${data.username}`, PindiPassword);
       navigate(`/chat/${data.room}/${data.username}`);
     });
 
@@ -68,7 +74,7 @@ function CreateRoom() {
     });
 
     return () => socket.off();
-  }, [navigate, username]);
+  }, [AindiPassword, PindiPassword, navigate, username]);
 
   return (
     <div id="page">
@@ -120,6 +126,10 @@ function CreateRoom() {
             <input type="password" placeholder="****" onChange={(e)=>setPassword(e.target.value)} />
           </div>
           <div className="form-row">
+            <h5>Your Password</h5>
+            <input type="password" placeholder="****" onChange={(e)=>setAindiPassword(e.target.value)} />
+          </div>
+          <div className="form-row">
             <h5>Admin Username</h5>
             <input placeholder="Captain Name" onChange={(e)=>setUsername(e.target.value)} />
           </div>
@@ -136,6 +146,10 @@ function CreateRoom() {
           <div className="form-row">
             <h5>Room Code</h5>
             <input placeholder="Enter Room Name" onChange={(e)=>psetName(e.target.value)} />
+          </div>
+          <div className="form-row">
+            <h5>Your Password</h5>
+            <input type="password" placeholder="****" onChange={(e)=>setPindiPassword(e.target.value)} />
           </div>
           <div className="form-row">
             <h5>Your Username</h5>
