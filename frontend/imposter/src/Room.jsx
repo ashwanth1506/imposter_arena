@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { useParams, useNavigate } from "react-router-dom";
 import sendMp3 from "./assets/send.mp3";
 import tickMp3 from "./assets/tick.mp3";
+import googleLogo from "./assets/google_logo_g_logo_icon_159348.webp";
 import "./room.css";
 import StarsBackground from "./components/StarsBackground";
 
@@ -11,6 +12,7 @@ import StarsBackground from "./components/StarsBackground";
 const socket = io("https://imposter-arena.onrender.com", {
   transports: ["websocket"]
 });
+
 
 function Room() {
   const sendSound = new Audio(sendMp3);
@@ -57,6 +59,9 @@ function Room() {
     socket.emit("send_message", { room: roomName, user: name, message });
     setMessage("");
   };
+  function newtab() {
+    window.open(`https://www.google.com/search?q=${movie}`, "_blank", "noopener,noreferrer");
+  }
   const role=()=>{
     if(hide==true){
       sethide(false)
@@ -332,6 +337,14 @@ if(loadingGame){
                   <>
                     <p className="role-label">{name === imposter ? "IMPOSTER" : "MOVIE"}</p>
                     <h2 className="role-value">{name === imposter ? "???" : movie}</h2>
+                    {name!=imposter && <button
+                      className="google"
+                      type="button"
+                      onClick={newtab}
+                      aria-label="Search Google for imposter"
+                    >
+                      <img src={googleLogo} alt="" />
+                    </button>}
                   </>
                 )}
                 <button className="action-btn end-btn" onClick={role}>hide role</button>
