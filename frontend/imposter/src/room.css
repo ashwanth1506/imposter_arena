@@ -259,8 +259,8 @@ html, body {
 }
 .google {
   display: inline-flex;
-  width: 36px;
-  height: 36px;
+  width: 46px;
+  height: 46px;
   margin: 10px 0;
   padding: 9px;
   align-items: center;
@@ -268,13 +268,13 @@ html, body {
   overflow: hidden;
  
   border-radius: 50%;
-  background:#444;
+  background:transparent;
   
   cursor: pointer;
  
   position:absolute;
-  margin-left: 58px;
-  margin-top: -110px;
+  margin-left: 53px;
+  margin-top: -120px;
 }
 
 .google img {
