@@ -25,7 +25,7 @@ function Room() {
   // State
   const inputRef = useRef(null);
   const [players, setPlayers] = useState([]);
-  const [hide, sethide] = useState(false);
+  const [hide, sethide] = useState(true);
   const [showFinal, setShowFinal] = useState(false);
   const [vote, setVote] = useState("");
   const [voteSubmitted, setVoteSubmitted] = useState(false);
