@@ -246,7 +246,7 @@ ad:r.admin
 });
 
 /* START GAME */
-socket.on("start_game",(roomName)=>{
+socket.on("start_game",async (roomName)=>{
 
 const r=rooms.find(r=>r.room===roomName);
 if(!r) return;
@@ -260,7 +260,26 @@ delete votingTimers[roomName];
 r.started=true;
 r.voteRoundId++; // Increment round ID to invalidate old voting
 
-r.movie=movies[Math.floor(Math.random()*movies.length)];
+//r.movie=movies[Math.floor(Math.random()*movies.length)];
+const response = await fetch(
+    'https://myllm-isx1.onrender.com/api/llm',
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        body: 'Suggest exactly unique ONE popular movie name from Tamil or any other language. Return the movie name in English only. No explanations, sentences, quotes or additional text.'
+    }
+);
+
+if (!response.ok) {
+    r.movie = movies[Math.floor(Math.random() * movies.length)];
+} else {
+    const movie = (await response.text()).trim();
+
+    r.movie = movie;
+}
+
 r.imposter=r.players[Math.floor(Math.random()*r.players.length)];
 r.players=r.players.sort(() => Math.random() - 0.5);
 r.messages.length=0;
