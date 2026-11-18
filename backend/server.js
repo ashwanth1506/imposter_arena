@@ -27,6 +27,8 @@ const hasValidCredentials = (room, username, password) =>
   Object.prototype.hasOwnProperty.call(room.userPasswords, username) &&
   room.userPasswords[username] === password;
 
+const normalizeMovieTitle = (title) => title.trim().toLowerCase();
+
 io.on("connection",(socket)=>{
 
 console.log("User connected:",socket.id);
@@ -59,6 +61,8 @@ const newRoom = {
   activeUsers: new Set(),
   started: false,
   movie: "",
+  playedMovies: [],
+  movieRequestInProgress: false,
   imposter: "",
   votes: {},
   leaderboard: {},
@@ -250,6 +254,8 @@ socket.on("start_game",async (roomName)=>{
 
 const r=rooms.find(r=>r.room===roomName);
 if(!r) return;
+if(r.movieRequestInProgress) return;
+r.movieRequestInProgress=true;
 
 // Clear any pending voting timer from previous round
 if(votingTimers[roomName]){
@@ -262,6 +268,7 @@ r.voteRoundId++; // Increment round ID to invalidate old voting
 
 let suggestedMovie = "";
 try {
+  const playedMovies = r.playedMovies;
   const response = await fetch(
     "https://myllm-isx1.onrender.com/api/llm",
     {
@@ -269,7 +276,7 @@ try {
       headers: {
         "Content-Type": "text/plain"
       },
-      body: "Suggest exactly unique ONE popular movie name from Tamil or any other language dont repeat the same movie name. Return the movie name in English only. No explanations, sentences, quotes or additional text.",
+      body: `Suggest exactly ONE popular movie name from Tamil or any other language. Return a movie that is NOT in this already-played list: ${JSON.stringify(playedMovies)}. Return the movie name in English only. No explanations, sentences, quotes or additional text.`,
       signal: AbortSignal.timeout(6000)
     }
   );
@@ -283,7 +290,25 @@ try {
   console.warn("Movie suggestion service unavailable; using local movie list.", error);
 }
 
-r.movie = suggestedMovie || movies[Math.floor(Math.random() * movies.length)];
+const playedMovieTitles = new Set(r.playedMovies.map(normalizeMovieTitle));
+const unusedMovies = [...new Set(movies)].filter(
+  (movie) => !playedMovieTitles.has(normalizeMovieTitle(movie))
+);
+const isUnusedSuggestion =
+  suggestedMovie && !playedMovieTitles.has(normalizeMovieTitle(suggestedMovie));
+
+if (isUnusedSuggestion) {
+  r.movie = suggestedMovie;
+} else if (unusedMovies.length > 0) {
+  r.movie = unusedMovies[Math.floor(Math.random() * unusedMovies.length)];
+} else {
+  r.movieRequestInProgress=false;
+  io.to(roomName).emit("room_error","No unused movies are available for this room.");
+  return;
+}
+
+r.playedMovies.push(r.movie);
+r.movieRequestInProgress=false;
 
 r.imposter=r.players[Math.floor(Math.random()*r.players.length)];
 r.players=r.players.sort(() => Math.random() - 0.5);
