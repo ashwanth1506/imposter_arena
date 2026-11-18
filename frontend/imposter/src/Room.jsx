@@ -18,6 +18,7 @@ function Room() {
   const sendSound = new Audio(sendMp3);
   const tickAudio = useRef(new Audio(tickMp3));
   const votingTimerRef = useRef(null);
+  const currentVoteRoundIdRef = useRef(null);
   const gameLoadingTimerRef = useRef(null);
 
   const { roomName, name } = useParams();
@@ -45,7 +46,6 @@ function Room() {
   const [movie, setMovie] = useState("");
   const [result, setResult] = useState(null);
   const [resultShown, setResultShown] = useState(false);
-  const [currentVoteRoundId, setCurrentVoteRoundId] = useState(null);
   const [leaderboard, setLeaderboard] = useState({});
   const [gameEnded, setGameEnded] = useState(false);
   const [winner, setWinner] = useState(null);
@@ -93,6 +93,8 @@ navigate("/");
 
     // Reset voting state on reconnect
     socket.on("connect", () => {
+      clearInterval(votingTimerRef.current);
+      currentVoteRoundIdRef.current = null;
       setVoting(false);
       setVote("");
       setVoteSubmitted(false);
@@ -149,12 +151,13 @@ navigate("/");
       const roundId = typeof data === "object" ? data.voteRoundId : null;
       
       // Only start voting if it's a new round (prevent restart on reconnect)
-      if (roundId && currentVoteRoundId === roundId) {
+      if (roundId != null && currentVoteRoundIdRef.current === roundId) {
         console.log("Already voting in this round");
         return;
       }
       
-      setCurrentVoteRoundId(roundId);
+      clearInterval(votingTimerRef.current);
+      currentVoteRoundIdRef.current = roundId;
       setVoting(true); 
       setVoteTime(remaining); 
       setVote(""); 
@@ -178,7 +181,7 @@ navigate("/");
       setResult(data); 
       setResultShown(true);
       setVoting(false); 
-      setCurrentVoteRoundId(null);
+      currentVoteRoundIdRef.current = null;
       setLeaderboard(data.leaderboard || {});
       clearInterval(votingTimerRef.current);
       tickAudio.current.pause();
@@ -192,8 +195,9 @@ navigate("/");
     });
 
     socket.on("disconnect", () => {
+      clearInterval(votingTimerRef.current);
       setVoting(false);
-      setCurrentVoteRoundId(null);
+      currentVoteRoundIdRef.current = null;
       setVote("");
       setVoteSubmitted(false);
     });
@@ -201,6 +205,7 @@ navigate("/");
     return () => {
       socket.off();
       clearInterval(votingTimerRef.current);
+      currentVoteRoundIdRef.current = null;
       clearTimeout(gameLoadingTimerRef.current);
       tickAudio.current.pause();
     };
