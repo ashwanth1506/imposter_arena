@@ -260,25 +260,30 @@ delete votingTimers[roomName];
 r.started=true;
 r.voteRoundId++; // Increment round ID to invalidate old voting
 
-//r.movie=movies[Math.floor(Math.random()*movies.length)];
-const response = await fetch(
-    'https://myllm-isx1.onrender.com/api/llm',
+let suggestedMovie = "";
+try {
+  const response = await fetch(
+    "https://myllm-isx1.onrender.com/api/llm",
     {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain'
-        },
-        body: 'Suggest exactly unique ONE popular movie name from Tamil or any other language. Return the movie name in English only. No explanations, sentences, quotes or additional text.'
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain"
+      },
+      body: "Suggest exactly unique ONE popular movie name from Tamil or any other language dont repeat the same movie name. Return the movie name in English only. No explanations, sentences, quotes or additional text.",
+      signal: AbortSignal.timeout(6000)
     }
-);
+  );
 
-if (!response.ok) {
-    r.movie = movies[Math.floor(Math.random() * movies.length)];
-} else {
-    const movie = (await response.text()).trim();
-
-    r.movie = movie;
+  if (response.ok) {
+    suggestedMovie = (await response.text()).trim();
+  } else {
+    console.warn(`Movie suggestion service returned HTTP ${response.status}; using local movie list.`);
+  }
+} catch (error) {
+  console.warn("Movie suggestion service unavailable; using local movie list.", error);
 }
+
+r.movie = suggestedMovie || movies[Math.floor(Math.random() * movies.length)];
 
 r.imposter=r.players[Math.floor(Math.random()*r.players.length)];
 r.players=r.players.sort(() => Math.random() - 0.5);
