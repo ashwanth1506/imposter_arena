@@ -18,6 +18,7 @@ function Room() {
   const sendSound = new Audio(sendMp3);
   const tickAudio = useRef(new Audio(tickMp3));
   const votingTimerRef = useRef(null);
+  const gameLoadingTimerRef = useRef(null);
 
   const { roomName, name } = useParams();
   const navigate = useNavigate();
@@ -77,6 +78,11 @@ function Room() {
 socket.emit("end_game",roomName);
 };
 
+  const startGame = () => {
+    setLoadingGame(true);
+    socket.emit("start_game", roomName);
+  };
+
   useEffect(() => {
     const password = sessionStorage.getItem(`imposter-password:${roomName}:${name}`);
     socket.emit("join_chat_room", { room: roomName, user: name, password });
@@ -116,7 +122,8 @@ navigate("/");
     socket.on("game_started", (data) => {
       setIsShuffling(true); // Start animation
       setLoadingGame(true);
-      setTimeout(() => {
+      clearTimeout(gameLoadingTimerRef.current);
+      gameLoadingTimerRef.current = setTimeout(() => {
         setIsShuffling(false); // End animation after 5s
         setClick(1); setMovie(data.movie); setImposter(data.imposter); setMessages([]);
         setTurn(0); setResult(null); setVoting(false); setVote(""); setVoteSubmitted(false);
@@ -127,7 +134,7 @@ navigate("/");
         setTurn(data.cctu);
         setValid(data.ttu);
         console.log(players);
-      }, 5000);
+      }, 8000);
       console.log(players);
     });
 
@@ -194,6 +201,7 @@ navigate("/");
     return () => {
       socket.off();
       clearInterval(votingTimerRef.current);
+      clearTimeout(gameLoadingTimerRef.current);
       tickAudio.current.pause();
     };
   }, [roomName, name, navigate]);
@@ -416,12 +424,12 @@ if(loadingGame){
         {name === admin && (
           <>
             {click === 0 ? (
-              <button className="action-btn start-btn" onClick={() => socket.emit("start_game", roomName)}>START</button>
+              <button className="action-btn start-btn" onClick={startGame}>START</button>
             ) : (
               <button className="action-btn end-btn" onClick={endGame}>END GAME</button>
             )}
             {result && !gameEnded && (
-              <button className="action-btn next-btn" onClick={() => socket.emit("start_game", roomName)}>NEXT ROUND</button>
+              <button className="action-btn next-btn" onClick={startGame}>NEXT ROUND</button>
             )}
           </>
         )}
