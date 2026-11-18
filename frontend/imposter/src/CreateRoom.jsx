@@ -58,7 +58,7 @@ function CreateRoom() {
     socket.emit("join_room", joinData);
   };
     useEffect(() => {
-    fetch("https://imposter-arena.onrender.com")
+    fetch("https://myllm-isx1.onrender.com")
         .then(() => console.log("LLM Backend is awake!"))
         .catch(err => console.log("error LLM Backend waking up...", err));
 }, []);
